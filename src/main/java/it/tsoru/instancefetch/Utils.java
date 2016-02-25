@@ -21,7 +21,7 @@ public class Utils {
 	
 	public static void main(String[] args) {
 		
-//		exclude("http://dbpedia.org/class/yago/InfectiousAgent109312843", "Fungi.nt");
+		exclude("http://dbpedia.org/class/yago/InfectiousAgent109312843", "Fungi.nt");
 		exclude("http://dbpedia.org/class/yago/InfectiousAgent109312843", "InfectiousFungi.nt");
 		
 	}
@@ -78,8 +78,8 @@ public class Utils {
 
 		outStream.finish();
 
-//		inFile.delete();
-//		outFile.renameTo(inFile);
+		inFile.delete();
+		outFile.renameTo(inFile);
 		
 	}
 

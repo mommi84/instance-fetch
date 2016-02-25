@@ -43,10 +43,10 @@ public class InstanceFetch {
 		String setB = "InfectiousFungi.nt";
 		String setOut = "NonInfectiousFungi.nt";
 
-//		new InstanceFetch(setA, "http://dbpedia.org/ontology/Fungus").build();
-//		new InstanceFetch(setB, "http://dbpedia.org/ontology/Fungus",
-//				"http://dbpedia.org/class/yago/InfectiousAgent109312843")
-//				.build();
+		new InstanceFetch(setA, "http://dbpedia.org/ontology/Fungus").build();
+		new InstanceFetch(setB, "http://dbpedia.org/ontology/Fungus",
+				"http://dbpedia.org/class/yago/InfectiousAgent109312843")
+				.build();
 
 		Utils.minus(setA, setB, setOut);
 
