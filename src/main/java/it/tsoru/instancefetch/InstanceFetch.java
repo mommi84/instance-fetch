@@ -48,7 +48,7 @@ public class InstanceFetch {
 				"http://dbpedia.org/class/yago/InfectiousAgent109312843")
 				.build();
 
-		Utils.minus(setA, setB, setOut);
+		ExcludeTargetClass.minus(setA, setB, setOut);
 
 		System.out.println("Model saved to " + setOut);
 

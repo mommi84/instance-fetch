@@ -17,18 +17,16 @@ import com.hp.hpl.jena.sparql.core.Quad;
  * @author Tommaso Soru <tsoru@informatik.uni-leipzig.de>
  *
  */
-public class Utils {
+public class ExcludeTargetClass {
 	
 	public static void main(String[] args) {
 		
-		exclude("http://dbpedia.org/class/yago/InfectiousAgent109312843", "Fungi.nt");
-		exclude("http://dbpedia.org/class/yago/InfectiousAgent109312843", "InfectiousFungi.nt");
+		exclude("http://dbpedia.org/class/yago/InfectiousAgent109312843", "Fungi.nt", "Fungi-no-target-class.nt");
+		exclude("http://dbpedia.org/class/yago/InfectiousAgent109312843", "InfectiousFungi.nt", "InfectiousFungi-no-target-class.nt");
 		
 	}
 	
-	public static void exclude(String object, String input) {
-		
-		String output = input + ".tmp";
+	public static void exclude(String targetClass, String input, String output) {
 		
 		File inFile = new File(input);
 		File outFile = new File(output);
@@ -53,7 +51,7 @@ public class Utils {
 
 			@Override
 			public void triple(Triple triple) {
-				if (!triple.getObject().toString().equals(object))
+				if (!triple.getObject().toString().equals(targetClass))
 					outStream.triple(triple);
 			}
 
