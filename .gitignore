@@ -15,4 +15,5 @@ hs_err_pid*
 .classpath
 .settings/
 
-datasets/*.nt
+*.nt
+*.rdf
