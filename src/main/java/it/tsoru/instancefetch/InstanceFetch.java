@@ -17,6 +17,7 @@ import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.riot.WebContent;
 import org.apache.jena.sparql.engine.http.QueryEngineHTTP;
+import org.apache.jena.vocabulary.RDF;
 
 /**
  * @author Tommaso Soru <tsoru@informatik.uni-leipzig.de>
@@ -68,15 +69,20 @@ public class InstanceFetch {
 //
 //		System.out.println("Model saved to " + setOut);
 		
-		InstanceFetch fetch = new InstanceFetch("President_of_Italy.rdf", 
-				"http://dbpedia.org/property/title",
-				true,
-				"http://dbpedia.org/resource/President_of_Italy");
+//		InstanceFetch fetch = new InstanceFetch("President_of_Italy.rdf", 
+//				"http://dbpedia.org/property/title",
+//				true,
+//				"http://dbpedia.org/resource/President_of_Italy");
 		
 //		InstanceFetch fetch = new InstanceFetch("European_Union_Country.rdf", 
 //				"http://dbpedia.org/property/text",
 //				false,
 //				"http://dbpedia.org/resource/European_Union");
+
+		InstanceFetch fetch = new InstanceFetch("UN_Country.rdf", 
+		RDF.type.getURI(),
+		true,
+		"http://dbpedia.org/class/yago/MemberStatesOfTheUnitedNations");
 		
 		fetch.setVerbose(true);
 		fetch.build();
@@ -173,22 +179,23 @@ public class InstanceFetch {
 	 */
 	private long addCBD(String uri, Model m) {
 		
-		long size;
+		long size = 0;
 
 		String query = "DESCRIBE <" + uri + ">";
 		Query sparqlQuery = QueryFactory.create(query, Syntax.syntaxARQ);
 		QueryEngineHTTP qexec = (QueryEngineHTTP) QueryExecutionFactory.sparqlService(ENDPOINT,
 				sparqlQuery, GRAPH);
-		qexec.setModelContentType(WebContent.contentTypeRDFXML);
-		
+		qexec.setModelContentType(WebContent.contentTypeNTriplesAlt);
 		
 		try {
 			Model m2 = qexec.execDescribe();
 			size = m2.size();
 			m.add(m2);
 		} catch (Exception e1) {
-			if(verbose)
+			if(verbose) {
 				System.out.println("ERROR ON "+uri+": "+e1.getMessage());
+				e1.printStackTrace();
+			}
 			return -1;
 		}
 
