@@ -13,6 +13,7 @@ import org.apache.jena.query.ResultSet;
 import org.apache.jena.query.Syntax;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.riot.WebContent;
@@ -26,7 +27,7 @@ import org.apache.jena.vocabulary.RDF;
 public class InstanceFetch {
 
 	private static final String ENDPOINT = "http://dbpedia.org/sparql";
-	private static final String GRAPH = "";
+	private static final String GRAPH = "http://dbpedia.org";
 
 	private boolean verbose = false;
 	
@@ -69,20 +70,20 @@ public class InstanceFetch {
 //
 //		System.out.println("Model saved to " + setOut);
 		
-//		InstanceFetch fetch = new InstanceFetch("President_of_Italy.rdf", 
+//		InstanceFetch fetch = new InstanceFetch("President_of_Italy.nt", 
 //				"http://dbpedia.org/property/title",
 //				true,
 //				"http://dbpedia.org/resource/President_of_Italy");
 		
-//		InstanceFetch fetch = new InstanceFetch("European_Union_Country.rdf", 
-//				"http://dbpedia.org/property/text",
-//				false,
-//				"http://dbpedia.org/resource/European_Union");
+//		InstanceFetch fetch = new InstanceFetch("European_Union_Country.nt", 
+//				RDF.type.getURI(),
+//				true,
+//				"http://dbpedia.org/class/yago/WikicatMemberStatesOfTheEuropeanUnion");
 
-		InstanceFetch fetch = new InstanceFetch("UN_Country.rdf", 
+		InstanceFetch fetch = new InstanceFetch("Guitarist.nt", 
 		RDF.type.getURI(),
 		true,
-		"http://dbpedia.org/class/yago/MemberStatesOfTheUnitedNations");
+		"http://dbpedia.org/class/yago/Guitarist110151760");
 		
 		fetch.setVerbose(true);
 		fetch.build();
@@ -131,7 +132,7 @@ public class InstanceFetch {
 			return;
 		}
 
-		RDFDataMgr.write(output, m, Lang.RDFXML); // Lang.NTRIPLES);
+		RDFDataMgr.write(output, m, Lang.NTRIPLES);
 
 		System.out.println("Model saved to " + filename);
 
@@ -153,20 +154,33 @@ public class InstanceFetch {
 				sb.append("<" + classURI + "> <"+property+"> ?s . ");
 		}
 
-		String query = "select ?s where { " + sb.toString() + " }";
-		Query sparqlQuery = QueryFactory.create(query, Syntax.syntaxARQ);
-		QueryExecution qexec = QueryExecutionFactory.sparqlService(ENDPOINT,
-				sparqlQuery, GRAPH);
-		try {
-
-			ResultSet rs = qexec.execSelect();
-			while (rs.hasNext())
-				uris.add(rs.next().get("s").asResource().getURI());
-
-		} catch (Exception e1) {
-			e1.printStackTrace();
-			return null;
-		}
+		long resultSize = 0;
+		long offset = 0;
+		do {
+			String query = "select ?s where { " + sb.toString() + " } "
+					+ "offset " + offset + " limit 10000";
+			System.out.println(query);
+			Query sparqlQuery = QueryFactory.create(query, Syntax.syntaxARQ);
+			QueryExecution qexec = QueryExecutionFactory.sparqlService(ENDPOINT,
+					sparqlQuery, GRAPH);
+			try {
+	
+				ResultSet rs = qexec.execSelect();
+				for (int i=1; rs.hasNext(); i++) {
+					String uri = rs.next().get("s").asResource().getURI();
+					uris.add(uri);
+					System.out.println(i + ". " + uri);
+				}
+				resultSize = rs.getRowNumber();
+				
+			} catch (Exception e1) {
+				e1.printStackTrace();
+				return null;
+			}
+			
+			offset += 10000;
+			
+		} while(resultSize >= 10000);
 
 		System.out.println("Returning " + uris.size() + " URIs.");
 		return uris;
